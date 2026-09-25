@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<!--
+  AXL Point of View Deck — TEMPLATE
+  --------------------------------
+  Horizontal (16:9, PPT-size) Point of View deck for the axl-lab-facilitator skill (Job 1).
+  Customer-facing: it shows the customer we know their brand and where high-value agentic AI
+  sits in it. Never label it "research" anywhere the customer can see.
+
+  TWO VISUAL SYSTEMS, DELIBERATELY JOINED — keep both when you edit:
+  1. COVER. A photographic hero authored in inches on a 10 x 5.625in grid, rasterised through
+     --s (pinned to 128px inside a 1280x720 slide, so the artwork lands pixel-for-pixel). The
+     customer is identified by their LOGO in the proof card, and by the title lockup
+     "{{COMPANY_NAME}} & Genesys" — never by a sales headline. There is no subtitle and no date.
+  2. INTERIOR. The readout / run-artifact language: nimbus canvas, hairline white cards, azure
+     rule-and-caps eyebrows, mono tool names, 1px-gap capability strips. EVERY interior content
+     slide (snapshot, menu, each use-case deep dive, and the sources/appendix slide) opens with the
+     run artifact's NAVY TITLE BAND (.ucband) — the shared gradient + orbit arcs, white brand marks,
+     arctic eyebrow — so all three AXL artifacts read as one family. The band carries the eyebrow +
+     title; the light content sits below it in a .body.ucbody. The appendix is fenced off by a full
+     navy divider. Keep the band on every content slide when you add or duplicate one — the only
+     slides without it are the photographic COVER and the full-navy appendix divider.
+
+  NO RECOMMENDATION SLIDE. The menu marks one card "Recommended"; the deck does not argue a pick.
+
+  ASSETS (not inlined — this deck is photographic). Ship the files in this skill's
+  assets/pov-deck-assets/ alongside the deck: copy that folder's contents into the session
+  folder's assets/ next to pov-deck.html. Then drop the customer's logo in as
+  assets/customer-logo.<ext> (the cover <img> constrains it, so any wordmark or square mark lands
+  clean). If no logo can be found, delete the "Prepared for" cell's <img> and move the company
+  name into that cell as text — never leave a broken image.
+
+  HOW TO USE
+  - COPY this file into the session folder (axl-sessions/AXL-<customername>/) as pov-deck.html
+    — never edit in place, and never copy another session's filled deck.
+  - COPY assets/pov-deck-assets/* into that session folder's assets/ folder.
+  - Replace every {{TOKEN}} with real content. Tag each use case Brand-grounded or Proposed.
+  - Duplicate the "section.slide.usecase" block once per candidate use case (aim for 3). EVERY copy
+    keeps its full tools strip, including the Escalation box — a deep dive with no tools strip is
+    the most common way this deck ships broken, so on screen any slide missing one wears a loud
+    warning. Tool icons are <use href="#ic-action|#ic-knowledge|#ic-system">, one per tool.
+  - Keep the cover proof card (1 session / Built with you / Yours to keep) and the stamp
+    "Agentic Experience Lab" as-is — that is fixed AXL value, not customer copy.
+  - To make a PDF, run the bundled script; it takes the 16:9 landscape size from the @page rule:
+      ../assets/render-pdf.sh <session folder>/pov-deck.html
+    Failing that: Print > Save as PDF > Landscape > margins None > "Background graphics" ON.
+  - CHECK THE PDF OUTSIDE CHROME. This deck is print-safe by construction — no blurred shadows,
+    no backdrop-filter, just gradients and hairline borders — so it renders identically in
+    Preview, Acrobat and PowerPoint. Keep it that way: the @media print block strips filter /
+    box-shadow / backdrop-filter, so read the note there before adding any.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Great American Insurance Group — AXL &amp; Genesys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --orange: #FF451A;
+    --navy: #152550;
+    --azure: #2243A2;
+    --arctic: #B1CADA;
+    --nimbus: #F9F8F5;
+    --nimbus-shade: #F1EFEA;
+    --patina: #18CAA8;
+    --patina-deep: #0F7D63;
+    --white: #FFFFFF;
+    --muted: #4B5978;
+    --faint: #8A92A6;
+    --line: rgba(21, 37, 80, 0.12);
+    --font: "Roboto", Arial, Helvetica, sans-serif;
+    --mono: "Roboto Mono", ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--nimbus-shade);
+    font-family: var(--font);
+    color: var(--navy);
+    -webkit-font-smoothing: antialiased;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .slide {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    margin: 24px auto;
+    background: var(--nimbus);
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     COVER — inch geometry from the source deck
+     ============================================================ */
+  .cover { --s: 128px; background: #000; }
+  .cover .el {
+    position: absolute;
+    left: calc(var(--x) * var(--s));
+    top: calc(var(--y) * var(--s));
+    width: calc(var(--w) * var(--s));
+    height: calc(var(--h) * var(--s));
+  }
+  .cover img.el { display: block; }
+  .cover .txt { font-size: calc(var(--fs) * var(--s)); line-height: 1.212; white-space: pre-line; }
+  .cover .nowrap { white-space: nowrap; }
+  /* Honours authored line breaks while refusing to reflow them. */
+  .cover .pre { white-space: pre; }
+  .cover .ctr { text-align: center; }
+
+  /* Intelligence-lens panel: a blurred crop of the photo under a translucent
+     navy-black tint. Both layers share the semicircular right cap, so the blur
+     never escapes the curve as a square edge. */
+  .cover .panel {
+    border-radius: 0 calc(1.61861 * var(--s)) calc(1.61861 * var(--s)) 0;
+    background-image:
+      linear-gradient(rgba(8, 12, 30, 0.41176), rgba(8, 12, 30, 0.41176)),
+      url("assets/panel-blur.png");
+    background-repeat: no-repeat, no-repeat;
+    background-size: 100% 100%, calc(8.17563 * var(--s)) calc(6.11966 * var(--s));
+    background-position: 0 0, 0 calc(-1.96996 * var(--s));
+  }
+
+  .cover .headline { color: #fff; font-weight: 700; }
+  .cover .headline.accent { color: var(--orange); }
+  .cover .hair { background: rgba(255, 255, 255, 0.22); }
+  /* Mono, letterspaced stamp — the same device the readout uses for its run stamp. */
+  .cover .stamp {
+    color: rgba(255, 255, 255, 0.62); font-family: var(--mono); font-weight: 600;
+    letter-spacing: calc(0.012 * var(--s)); text-transform: uppercase;
+  }
+  .cover .card { background: #fff; border: 1px solid #e8e7e3; border-radius: calc(0.16 * var(--s)); }
+  .cover .divider { background: #dcdcd9; }
+  .cover .stat-title { color: var(--navy); font-weight: 700; }
+  .cover .stat-body { color: #4A5470; font-weight: 400; }
+  .cover .label {
+    color: #6B7590; font-weight: 700;
+    letter-spacing: calc(0.011 * var(--s)); text-transform: uppercase;
+  }
+
+  /* ============================================================
+     INTERIOR — brand furniture
+     ============================================================ */
+  .mast { position: absolute; top: 42px; left: 64px; height: 36px; z-index: 5; }
+  .glogo { position: absolute; top: 49px; right: 64px; height: 22px; z-index: 5; }
+
+  /* Corner wash: a pure-CSS stand-in for the orchestration threads. Gradients
+     never clip into content and print identically everywhere. */
+  .wash {
+    position: absolute; right: 0; bottom: 0; width: 470px; height: 280px;
+    z-index: 1; pointer-events: none;
+    background:
+      radial-gradient(125% 105% at 100% 100%, rgba(255, 69, 26, .13) 0%, rgba(255, 69, 26, .045) 44%, transparent 74%),
+      radial-gradient(95% 85% at 86% 97%, rgba(34, 67, 162, .10) 0%, transparent 70%);
+  }
+
+  .body {
+    position: absolute; inset: 0; padding: 112px 64px 52px;
+    z-index: 3; display: flex; flex-direction: column;
+  }
+
+  /* Rule-and-caps eyebrow, carried over from the readout. */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: var(--azure); font-size: 11.5px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 3px; border-radius: 999px; background: var(--orange); }
+  .eyebrow.plain::before { background: currentColor; }
+
+  h2 { margin-top: 12px; font-size: 40px; line-height: 1.05; font-weight: 700; letter-spacing: -0.025em; }
+  .lead { margin-top: 12px; font-size: 18px; line-height: 1.42; color: var(--muted); max-width: 74ch; }
+
+  .rule-lbl {
+    display: flex; align-items: center; gap: 9px;
+    color: var(--navy); font-size: 11.5px; font-weight: 800;
+    letter-spacing: 0.11em; text-transform: uppercase;
+  }
+  .rule-lbl::before { content: ""; width: 18px; height: 3px; border-radius: 999px; background: var(--azure); }
+
+  /* ---------------- Slide 2 · snapshot ---------------- */
+  .snap { display: grid; grid-template-columns: 1.12fr 1fr; gap: 40px; margin-top: 14px; flex: 1; }
+  .snap .stack { display: flex; flex-direction: column; gap: 14px; }
+  .facts { display: flex; flex-direction: column; gap: 13px; }
+  .fact .k {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--azure); margin-bottom: 6px;
+  }
+  .fact .v { font-size: 17px; line-height: 1.4; }
+  .card {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 16px; padding: 20px 26px;
+  }
+  .card h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  .signals { list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 13px; }
+  .signals li { position: relative; padding-left: 22px; font-size: 15.5px; line-height: 1.38; }
+  .signals li::before {
+    content: ""; position: absolute; left: 0; top: 7px;
+    width: 8px; height: 8px; border-radius: 50%; background: var(--orange);
+  }
+  /* Open questions read as secondary to the findings above them. */
+  .signals.muted { gap: 10px; }
+  .signals.muted li { font-size: 14.5px; color: var(--muted); }
+  .signals.muted li::before { background: var(--arctic); }
+
+  /* ---------------- Slide 3 · the menu ---------------- */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 34px; flex: 1; }
+  .uc {
+    position: relative; background: var(--white); border: 1px solid var(--line);
+    border-radius: 18px; padding: 30px 24px 22px; display: flex; flex-direction: column;
+  }
+  .uc.rec { border: 2px solid var(--orange); }
+  .uc .num {
+    position: absolute; top: -15px; left: 22px; width: 32px; height: 32px; border-radius: 50%;
+    background: var(--orange); color: #fff; font-weight: 700; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .uc .recflag {
+    position: absolute; top: -12px; right: 20px; background: var(--navy); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .uc .kicker {
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--faint); margin-bottom: 7px;
+  }
+  .uc h3 { font-size: 21px; line-height: 1.14; font-weight: 700; letter-spacing: -0.015em; }
+  /* The paragraph absorbs the slack so the spec table and tags bottom-align
+     across all three cards however long the copy runs. */
+  .uc p { margin-top: 11px; font-size: 15px; line-height: 1.42; color: var(--muted); flex: 1; }
+  /* Previews the deep dive: what this journey costs to build, before the detail slide. */
+  .spec { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .spec div { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 12.5px; }
+  .spec span { color: var(--faint); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: 10.5px; }
+  .spec b { font-family: var(--mono); font-size: 11.5px; font-weight: 600; text-align: right; }
+  .tags { margin-top: 16px; display: flex; gap: 7px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em;
+    text-transform: uppercase; padding: 5px 11px; border-radius: 999px;
+  }
+  .tag.grounded { background: #e7edf2; color: var(--azure); }
+  .tag.proposed { background: #FFF1C2; color: #8A6200; }
+  .tag.impact { background: linear-gradient(135deg, #B1CADA 0%, #F9F8F5 100%); color: var(--navy); }
+
+  /* ---------------- Deep dives ---------------- */
+  .dd { display: grid; grid-template-columns: 1.32fr 1fr; gap: 34px; margin-top: 20px; }
+  .steps { counter-reset: step; list-style: none; margin-top: 12px; }
+  .steps li { position: relative; padding: 6px 0 6px 38px; font-size: 16px; line-height: 1.34; }
+  .steps li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: 5px; width: 25px; height: 25px; border-radius: 50%;
+    background: var(--navy); color: #fff; font-size: 12.5px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .side { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+  .block { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 15px 18px; }
+  .block .k {
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--azure); margin-bottom: 6px;
+  }
+  .block .v { font-size: 15px; line-height: 1.35; }
+  .block.wow { background: linear-gradient(135deg, #B1CADA 0%, #F9F8F5 100%); border-color: transparent; }
+  .block.wow .k { color: var(--orange); }
+
+  /* Capability strip: 1px-gap grid over a hairline, lifted from the readout. */
+  .tools { margin-top: 22px; }
+  .toolhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .legend { display: flex; gap: 16px; }
+  .legend .k { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--muted); font-weight: 600; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 3px; }
+  .strip {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+    border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--line);
+  }
+  .tool { min-width: 0; background: var(--white); padding: 13px 15px 14px; border-top: 3px solid var(--navy); }
+  .tool .head { display: flex; align-items: center; gap: 9px; }
+  .tool .ic {
+    flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; background: var(--navy);
+  }
+  .tool .ic svg { width: 15px; height: 15px; }
+  .tool .nm { font-family: var(--mono); font-size: 13px; font-weight: 700; line-height: 1.1; word-break: break-word; }
+  .tool .kd { margin-top: 3px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--navy); }
+  .tool .nt { margin-top: 9px; font-size: 12.5px; line-height: 1.3; color: var(--muted); }
+  .tool .built { margin-top: 8px; font-family: var(--mono); font-size: 10.5px; color: var(--faint); }
+  .tool.action { border-top-color: var(--orange); }
+  .tool.action .ic { background: var(--orange); }
+  .tool.action .kd { color: var(--orange); }
+  .tool.knowledge { border-top-color: var(--azure); }
+  .tool.knowledge .ic { background: var(--azure); }
+  .tool.knowledge .kd { color: var(--azure); }
+
+  /* ---------------- Use-case title band ----------------
+     Ports the run artifact's navy hero — the same gradient and the two thin
+     orbit arcs — onto each use-case deep dive, so all three AXL artifacts read
+     as one family. White brand marks on navy, arctic eyebrow, orange arc.
+     The arcs are elliptical hairline borders, so they stay vector in the PDF. */
+  .ucband {
+    position: absolute; top: 0; left: 0; right: 0; height: 178px;
+    overflow: hidden; isolation: isolate; z-index: 2; color: #fff;
+    background:
+      radial-gradient(circle at 82% 26%, rgba(34, 67, 162, 0.92), transparent 46%),
+      linear-gradient(135deg, #101D43 0%, #152550 58%, #1A347D 100%);
+  }
+  .ucband::before, .ucband::after {
+    content: ""; position: absolute; z-index: -1;
+    border: 1px solid rgba(177, 202, 218, 0.22);
+    border-radius: 50%; transform: rotate(-18deg);
+  }
+  .ucband::before { width: 720px; height: 176px; right: -150px; top: 30px; }
+  .ucband::after  { width: 520px; height: 120px; right: 90px; bottom: -66px; border-color: rgba(255, 69, 26, 0.30); }
+  .ucband .mast { top: 40px; left: 64px; }
+  .ucband .glogo { top: 47px; right: 64px; }
+  .ucband-txt { position: absolute; left: 64px; right: 64px; bottom: 26px; }
+  .ucband .eyebrow { color: var(--arctic); }
+  .ucband h2 { margin-top: 9px; color: #fff; font-size: 34px; letter-spacing: -0.03em; }
+  .ucband h2 .accent { color: var(--orange); }
+  /* Clear the band; the rest of the slide keeps the light readout language. */
+  .ucbody { padding-top: 206px; }
+
+  /* ---------------- Appendix section divider ----------------
+     Same navy hero language, used full-bleed to mark where the main
+     narrative ends and the reference material begins. */
+  .divider-slide {
+    color: #fff; overflow: hidden; isolation: isolate;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(34, 67, 162, 0.9), transparent 44%),
+      linear-gradient(135deg, #101D43 0%, #152550 58%, #1A347D 100%);
+  }
+  .divider-slide::before, .divider-slide::after {
+    content: ""; position: absolute; z-index: 1; pointer-events: none;
+    border: 1px solid rgba(177, 202, 218, 0.22);
+    border-radius: 50%; transform: rotate(-18deg);
+  }
+  .divider-slide::before { width: 980px; height: 250px; right: -150px; top: 150px; }
+  .divider-slide::after  { width: 680px; height: 170px; right: 120px; bottom: -84px; border-color: rgba(255, 69, 26, 0.28); }
+  .divider-slide .body { justify-content: center; z-index: 3; }
+  .divider-slide .eyebrow { color: var(--arctic); }
+  .divider-slide h2 { font-size: 66px; font-weight: 900; letter-spacing: -0.04em; }
+  .divider-slide .lead { color: var(--arctic); max-width: 58ch; }
+
+  /* ---------------- Half-finished deep-dive warning (screen only) ----------------
+     A deep dive that ships without its tools strip is the most common broken deck.
+     The script at the end of <body> flags any .usecase slide missing one. */
+  .usecase.no-tools .ucband { background: #7a1200; }
+  .ucwarn {
+    position: absolute; left: 64px; right: 64px; bottom: 40px; z-index: 6;
+    background: var(--orange); color: #fff; border-radius: 12px; padding: 14px 18px;
+    font-size: 14px; font-weight: 700; line-height: 1.35;
+  }
+  @media print { .ucwarn { display: none; } }
+
+  /* ---------------- Sources ---------------- */
+  .srcgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 22px; margin-top: 26px; }
+  .src {
+    background: var(--white); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 18px; display: flex; gap: 14px; align-items: baseline;
+  }
+  .src .p {
+    flex: 0 0 auto; font-size: 9.5px; font-weight: 800; letter-spacing: 0.09em;
+    text-transform: uppercase; padding: 4px 9px; border-radius: 999px;
+    background: #e7edf2; color: var(--azure);
+  }
+  .src .p.inf { background: #FFF1C2; color: #8A6200; }
+  .src .t { font-size: 14.5px; line-height: 1.35; }
+  .src .t span { display: block; margin-top: 3px; font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+
+  .confirm { margin-top: 30px; }
+  .cgrid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 11px;
+    border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--line);
+  }
+  .ccell { background: var(--white); padding: 15px 18px 17px; font-size: 14px; line-height: 1.38; color: var(--muted); }
+  .ccell b {
+    display: block; margin-bottom: 6px; color: var(--azure); font-size: 10.5px;
+    font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+
+  @page { size: 13.333in 7.5in; margin: 0; }
+  @media print {
+    html, body { background: #fff; }
+    .slide { margin: 0; page-break-after: always; break-after: page; }
+    .slide:last-child { page-break-after: auto; }
+    /* Blur cannot be expressed as vectors, so Chrome rasterises it into a soft
+       mask that other PDF viewers ignore — leaving flat grey boxes. Depth here
+       is carried by borders, which stay vector everywhere. */
+    *, *::before, *::after {
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      filter: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-action" viewBox="0 0 215 215"><path fill="#fff" d="M187.656 42.6521V60.2149C187.656 76.3873 150.885 89.4862 105.536 89.4862C60.1867 89.4862 23.416 76.3873 23.416 60.2149V42.6521C23.416 26.4798 60.1867 13.3809 105.536 13.3809C150.885 13.3809 187.656 26.4798 187.656 42.6521ZM167.566 91.9376C175.191 89.23 182.193 85.7541 187.656 81.4732V118.757C187.656 134.93 150.885 148.029 105.536 148.029C60.1867 148.029 23.416 134.93 23.416 118.757V81.4732C28.8785 85.7907 35.8807 89.23 43.5061 91.9376C59.9667 97.7919 81.8898 101.195 105.536 101.195C129.182 101.195 151.105 97.7919 167.566 91.9376ZM23.416 140.016C28.8785 144.333 35.8807 147.773 43.5061 150.48C59.9667 156.334 81.8898 159.737 105.536 159.737C129.182 159.737 151.105 156.334 167.566 150.48C175.191 147.773 182.193 144.297 187.656 140.016V171.446C187.656 187.618 150.885 200.717 105.536 200.717C60.1867 200.717 23.416 187.618 23.416 171.446V140.016Z"/></symbol>
+  <symbol id="ic-knowledge" viewBox="0 0 215 215"><path fill="#fff" d="M94.5603 179.912C98.0729 181.15 101.846 178.577 101.846 174.865V51.9713C101.846 50.6037 101.325 49.236 100.219 48.3894C93.8448 43.3095 79.2092 36.7969 60.2154 36.7969C43.7909 36.7969 28.4398 41.1278 19.2681 44.6446C15.593 46.0774 13.3813 49.7245 13.3813 53.6646V174.246C13.3813 178.121 17.5444 180.824 21.2195 179.619C31.4645 176.2 47.6938 172.26 60.2154 172.26C71.2409 172.26 85.9091 176.819 94.5603 179.912ZM119.539 179.912C128.19 176.819 142.858 172.26 153.883 172.26C166.405 172.26 182.634 176.2 192.879 179.619C196.554 180.856 200.717 178.121 200.717 174.246V53.6646C200.717 49.7245 198.506 46.0774 194.831 44.6772C185.659 41.1278 170.308 36.7969 153.883 36.7969C134.89 36.7969 120.254 43.3095 113.879 48.3894C112.806 49.236 112.253 50.6037 112.253 51.9713V174.865C112.253 178.577 116.058 181.15 119.539 179.912Z"/></symbol>
+  <symbol id="ic-system" viewBox="0 0 215 215"><path fill="#fff" d="M107.1 23.416C147.948 23.4161 182.083 52.3878 190.44 91.0859C196.667 95.7207 200.717 103.202 200.717 111.631V130.723C200.717 138.232 197.502 144.989 192.398 149.651V157.972C192.398 174.316 179.27 187.565 163.043 187.565H126.292C126.268 187.563 126.244 187.559 126.22 187.557H120.778C118.291 190.971 114.262 193.191 109.714 193.191H99.604C92.0497 193.191 85.9263 187.067 85.9263 179.513C85.9263 171.958 92.0497 165.834 99.604 165.834H109.714C114.26 165.834 118.288 168.052 120.775 171.465H160.859V171.739C161.647 171.649 162.444 171.556 163.25 171.465C170.614 171.498 176.404 165.404 176.404 157.972V156.165C176.158 156.172 175.911 156.177 175.664 156.177H169.4C162.471 156.177 156.873 150.489 156.873 143.449V98.9033C156.873 91.8635 162.471 86.1758 169.4 86.1758H172.457C162.941 59.0124 137.277 39.5587 107.1 39.5586C76.9232 39.5586 51.2597 59.0124 41.7437 86.1758H44.6997C51.6285 86.176 57.226 91.8636 57.2261 98.9033V143.449C57.2261 150.489 51.6285 156.177 44.6997 156.177H38.436C24.6173 156.177 13.3816 144.762 13.3813 130.723V111.631C13.3814 103.148 17.4839 95.6237 23.7788 90.9961C32.1689 52.3429 66.2835 23.416 107.1 23.416Z"/></symbol>
+</svg>
+
+
+<!-- ==================== 1 · COVER ==================== -->
+<section class="slide cover">
+  <img class="el" src="assets/bg-photo.png" alt="" style="--x:0; --y:0.00123; --w:9.99995; --h:5.62427">
+  <img class="el" src="assets/scrim-diagonal.svg" alt="" style="--x:0; --y:0.00073; --w:9.9678; --h:5.62427">
+  <img class="el" src="assets/scrim-bottom.svg" alt="" style="--x:0; --y:0.00073; --w:9.99995; --h:5.62427">
+  <img class="el" src="assets/threads.png" alt="" style="--x:0; --y:2.89706; --w:8.81139; --h:2.72844">
+
+  <img class="el" src="assets/axl-logo.png" alt="AXL — Agentic Experience Labs" style="--x:0.39; --y:0.39994; --w:2.5125; --h:0.42337">
+  <img class="el" src="assets/genesys-fcw.svg" alt="Genesys" style="--x:8.09434; --y:0.47161; --w:1.51566; --h:0.28">
+
+  <div class="el panel" style="--x:0; --y:1.07; --w:4.35238; --h:3.23721"></div>
+
+  <!-- Cover lockup: customer name over "& Genesys". No sales headline, no subtitle.
+       For a long name, lower --fs on the first line (e.g. 0.40) or drop "nowrap". -->
+  <div class="el txt headline nowrap" style="--x:0.465; --y:1.841; --w:3.6; --h:0.5818; --fs:0.44">Great American</div>
+  <div class="el txt headline accent nowrap" style="--x:0.465; --y:2.4228; --w:3.6; --h:0.5818; --fs:0.48">&amp; Genesys</div>
+  <div class="el hair" style="--x:0.48; --y:3.2645; --w:2.6; --h:0.012"></div>
+  <div class="el txt stamp" style="--x:0.48; --y:3.3865; --w:3.2; --h:0.15; --fs:0.095">Agentic Experience Lab</div>
+
+  <!-- Card spans y 4.14–5.18, so every cell composes about the axis y = 4.66. -->
+  <div class="el card" style="--x:1.15625; --y:4.14; --w:7.6875; --h:1.04"></div>
+  <div class="el divider" style="--x:2.52; --y:4.3; --w:0.014; --h:0.72"></div>
+  <div class="el divider" style="--x:4.62; --y:4.3; --w:0.014; --h:0.72"></div>
+  <div class="el divider" style="--x:6.72; --y:4.3; --w:0.014; --h:0.72"></div>
+
+  <div class="el txt label ctr" style="--x:1.15625; --y:4.2875; --w:1.36375; --h:0.13; --fs:0.0875">Prepared for</div>
+  <img class="el" src="assets/customer-logo.png" alt="Great American Insurance Group" style="--x:1.48; --y:4.44; --w:0.7; --h:0.4025">
+
+  <img class="el" src="assets/icon-donut.png" alt="" style="--x:2.66; --y:4.43; --w:0.46; --h:0.46">
+  <div class="el txt stat-title nowrap" style="--x:3.22; --y:4.4175; --w:1.32; --h:0.19; --fs:0.1375">1 session</div>
+  <div class="el txt stat-body" style="--x:3.22; --y:4.6425; --w:1.32; --h:0.26; --fs:0.105">From an idea to a working AI agent.</div>
+
+  <img class="el" src="assets/icon-bulb.png" alt="" style="--x:4.8; --y:4.43; --w:0.3753; --h:0.46">
+  <div class="el txt stat-title nowrap" style="--x:5.32; --y:4.4175; --w:1.32; --h:0.19; --fs:0.1375">Built with you</div>
+  <div class="el txt stat-body" style="--x:5.32; --y:4.6425; --w:1.32; --h:0.26; --fs:0.105">Side-by-side with Genesys AI specialists.</div>
+
+  <img class="el" src="assets/icon-spark.png" alt="" style="--x:6.86; --y:4.43; --w:0.46; --h:0.46">
+  <div class="el txt stat-title nowrap" style="--x:7.42; --y:4.4175; --w:1.34; --h:0.19; --fs:0.1375">Yours to keep</div>
+  <div class="el txt stat-body" style="--x:7.42; --y:4.6425; --w:1.34; --h:0.26; --fs:0.105">See it, validate it, leave with a plan.</div>
+</section>
+
+
+<!-- ==================== 2 · SNAPSHOT ==================== -->
+<section class="slide">
+  <div class="ucband">
+    <img class="mast" src="assets/axl-lockup-white.png" alt="AXL — Agentic Experience Labs">
+    <img class="glogo" src="assets/genesys-logo-white.svg" alt="Genesys">
+    <div class="ucband-txt">
+      <div><span class="eyebrow">What we know about you</span></div>
+      <h2>Summit today</h2>
+    </div>
+  </div>
+  <div class="wash"></div>
+
+  <div class="body ucbody">
+    <div class="snap">
+      <div class="facts">
+        <div class="fact">
+          <div class="k">What you do</div>
+          <div class="v">Summit, a Great American Insurance Group company, provides workers' compensation insurance and claims/billing services through four affiliate carriers — "Know the people who know workers' comp&reg;."</div>
+        </div>
+        <div class="fact">
+          <div class="k">Who you serve</div>
+          <div class="v">7,000+ independent agents and 31,000+ policyholders across 18 states plus D.C. — and, on the billing line, the medical providers and injured employees behind every claim.</div>
+        </div>
+        <div class="fact">
+          <div class="k">Service today</div>
+          <div class="v">A relationship-led, human-touch model: a field team in every state, and a dedicated Medical Bill Reviewer group in Lakeland, FL fielding billing calls alongside fee-schedule audits and dispute handling.</div>
+        </div>
+        <div class="fact">
+          <div class="k">Brand voice</div>
+          <div class="v">Warm, plainspoken, specialist-not-corporate — "More access. More know-how. More commitment." Always a real person reachable.</div>
+        </div>
+        <div class="fact">
+          <div class="k">Where the volume sits</div>
+          <div class="v">Inbound billing/claims calls on Summit's medical bills — payment status, receipt confirmation, documentation, denials and appeals — the exact drivers named in your brief.</div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Signals we picked up</h3>
+          <ul class="signals">
+            <li>Summit publicly staffs a dedicated "Medical Bill Reviewer" role that fields billing calls <em>and</em> audits bills against state fee schedules — the same volume the brief wants to automate is already competing with core review work.</li>
+            <li>"You'll always be able to speak to a real human being" is a stated brand promise — any automation has to keep a fast, visible path to a person, not bury it.</li>
+            <li>Summit underwrites through four affiliate carriers across 18 states plus D.C. — claim identifiers and fee-schedule rules likely vary by state.</li>
+            <li>Bill Reviewers already own "billing disputes" and SIU referrals — denial and appeal questions sit with a specialist team today, not a generalist queue.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>What we couldn't see from outside</h3>
+          <ul class="signals muted">
+            <li>The real volume mix across the five call drivers — the brief names them, not their share of total calls.</li>
+            <li>Which system(s) the Tax ID + Bill ID lookup would actually query today.</li>
+            <li>Whether the AI-powered leg after IVR authentication is voice, and what the existing IVR already exposes at hand-off.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== 3 · THE MENU ==================== -->
+<section class="slide">
+  <div class="ucband">
+    <img class="mast" src="assets/axl-lockup-white.png" alt="AXL — Agentic Experience Labs">
+    <img class="glogo" src="assets/genesys-logo-white.svg" alt="Genesys">
+    <div class="ucband-txt">
+      <div><span class="eyebrow">Where we'd start</span></div>
+      <h2>Which one do we build in the lab?</h2>
+    </div>
+  </div>
+  <div class="wash"></div>
+
+  <div class="body ucbody">
+    <div class="lead">One intent each, so it can be finished in a session. Pick one to prototype today — the others are parked, not discarded.</div>
+
+    <!-- One card per use case. Mark the strongest lab candidate with class="rec" +
+         the .recflag badge. Tag each Brand-grounded (traces to a public page) or
+         Proposed (your inference). Keep the spec rows short — they preview the deep dive. -->
+    <div class="cards">
+      <div class="uc rec">
+        <div class="num">1</div>
+        <div class="recflag">Recommended</div>
+        <div class="kicker">Use case 1</div>
+        <h3>Payment status inquiry</h3>
+        <p>A caller already validated by the IVR (Tax ID + Bill ID) asks "has my payment gone out?" and gets a specific, dated answer — no hold, no transfer.</p>
+        <div class="spec">
+          <div><span>Tools</span><b>2 actions + KB</b></div>
+          <div><span>Systems</span><b>Billing platform (mock)</b></div>
+          <div><span>Lab fit</span><b>Single read lookup</b></div>
+        </div>
+        <div class="tags">
+          <span class="tag grounded">Brand-grounded</span>
+          <span class="tag impact">Highest call volume</span>
+        </div>
+      </div>
+
+      <div class="uc">
+        <div class="num">2</div>
+        <div class="kicker">Use case 2</div>
+        <h3>Documentation &amp; submission status</h3>
+        <p>A provider isn't sure a bill or its supporting records arrived — the AVA names exactly what's on file, what's outstanding, and offers to trigger a reminder.</p>
+        <div class="spec">
+          <div><span>Tools</span><b>2 actions + KB</b></div>
+          <div><span>Systems</span><b>Document tracking (mock)</b></div>
+          <div><span>Lab fit</span><b>Read + confirmed write</b></div>
+        </div>
+        <div class="tags">
+          <span class="tag grounded">Brand-grounded</span>
+        </div>
+      </div>
+
+      <div class="uc">
+        <div class="num">3</div>
+        <div class="kicker">Use case 3</div>
+        <h3>Denial &amp; appeal guidance</h3>
+        <p>A caller whose bill was denied hears the specific reason and appeal deadline in plain language, then hands off to Appeals with the denial code already on screen.</p>
+        <div class="spec">
+          <div><span>Tools</span><b>2 actions + KB</b></div>
+          <div><span>Systems</span><b>Claims &amp; appeals (mock)</b></div>
+          <div><span>Lab fit</span><b>Explain, then hand off</b></div>
+        </div>
+        <div class="tags">
+          <span class="tag grounded">Brand-grounded</span>
+          <span class="tag proposed">Delivery proposed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ USE-CASE DEEP DIVE — DUPLICATE ONCE PER USE CASE ============
+     One slide per candidate use case (aim for 3), numbered to match the menu.
+     Each slide opens with the navy .ucband (the run-artifact hero: gradient +
+     orbit arcs, white marks). EVERY copy keeps its full tools strip below,
+     including the Escalation box — a deep dive with no tools strip ships broken
+     and wears a loud on-screen warning. Icons: #ic-action / #ic-knowledge /
+     #ic-system. Order the strip actions -> knowledge -> the System · Hand-off. -->
+<section class="slide usecase">
+  <div class="ucband">
+    <img class="mast" src="assets/axl-lockup-white.png" alt="AXL — Agentic Experience Labs">
+    <img class="glogo" src="assets/genesys-logo-white.svg" alt="Genesys">
+    <div class="ucband-txt">
+      <div><span class="eyebrow">Use case 1 · deep dive</span></div>
+      <h2>Payment status inquiry</h2>
+    </div>
+  </div>
+  <div class="wash"></div>
+
+  <div class="body ucbody">
+    <div class="dd">
+      <div>
+        <div class="rule-lbl">Happy path</div>
+        <ol class="steps">
+          <li>The IVR has already collected and validated the caller's Tax ID and Bill ID and hands off to the AI experience with that context.</li>
+          <li>The assistant confirms the bill it's looking at (provider, date of service, amount) so the caller knows it has the right one.</li>
+          <li>It calls <code>get_bill_payment_status</code> and reads back the status — e.g. "processed on 9/18, payment issued 9/20 for $412.50."</li>
+          <li>If the caller asks a follow-up ("what's an EOB?"), it answers from Billing Knowledge; otherwise it offers "anything else?" and closes cleanly.</li>
+        </ol>
+      </div>
+      <div class="side">
+        <div class="block">
+          <div class="k">Why it matters</div>
+          <div class="v">Payment status is the single most common billing call named in your brief — and today each one ties up a Medical Bill Reviewer who also owns fee-schedule audits and dispute work.</div>
+        </div>
+        <div class="block wow">
+          <div class="k">Wow moment</div>
+          <div class="v">A caller gets a specific, dated payment answer — no hold, no transfer — in under 30 seconds, built entirely on the identifiers the IVR already validated.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools">
+      <div class="toolhead">
+        <div class="rule-lbl">Tools &amp; knowledge — what the assistant calls</div>
+        <div class="legend">
+          <span class="k"><span class="sw" style="background:var(--orange)"></span>Action</span>
+          <span class="k"><span class="sw" style="background:var(--azure)"></span>Knowledge</span>
+          <span class="k"><span class="sw" style="background:var(--navy)"></span>System</span>
+        </div>
+      </div>
+      <div class="strip">
+        <div class="tool action">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-action"/></svg></div>
+            <div><div class="nm">get_bill_payment_status</div><div class="kd">Action · Read</div></div>
+          </div>
+          <div class="nt">Looks up payment status, date and amount for a validated Bill ID.</div>
+          <div class="built">New Data Action · mock billing platform</div>
+        </div>
+        <div class="tool action">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-action"/></svg></div>
+            <div><div class="nm">get_claim_context</div><div class="kd">Action · Read</div></div>
+          </div>
+          <div class="nt">Pulls the linked claim number, provider and date of service so the assistant confirms the right bill.</div>
+          <div class="built">New Data Action · mock claims platform</div>
+        </div>
+        <div class="tool knowledge">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-knowledge"/></svg></div>
+            <div><div class="nm">billing_terms_knowledge</div><div class="kd">Knowledge</div></div>
+          </div>
+          <div class="nt">Answers "what does that mean" follow-ups — EOB, fee-schedule adjustment, remittance codes.</div>
+          <div class="built">Knowledge Fabric · new source</div>
+        </div>
+        <div class="tool">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-system"/></svg></div>
+            <div><div class="nm">Escalation</div><div class="kd">System · Hand-off</div></div>
+          </div>
+          <div class="nt">Hands to a Medical Bill Reviewer if the caller wants to dispute the amount or the answer isn't enough.</div>
+          <div class="built">Routes to Billing queue · Bill ID, claim number, status passed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== USE-CASE 2 · DEEP DIVE ==================== -->
+<section class="slide usecase">
+  <div class="ucband">
+    <img class="mast" src="assets/axl-lockup-white.png" alt="AXL — Agentic Experience Labs">
+    <img class="glogo" src="assets/genesys-logo-white.svg" alt="Genesys">
+    <div class="ucband-txt">
+      <div><span class="eyebrow">Use case 2 · deep dive</span></div>
+      <h2>Documentation &amp; submission status</h2>
+    </div>
+  </div>
+  <div class="wash"></div>
+
+  <div class="body ucbody">
+    <div class="dd">
+      <div>
+        <div class="rule-lbl">Happy path</div>
+        <ol class="steps">
+          <li>The IVR hands off an already-authenticated caller (Tax ID + Bill ID / claim identifiers validated).</li>
+          <li>The assistant calls <code>get_documentation_status</code> to check what's on file for the bill or claim.</li>
+          <li>It reads back what's received and what's outstanding — e.g. "we have the bill and the itemized statement; we're still waiting on the treatment notes."</li>
+          <li>If something's missing, it offers to send a reminder (with a clear "yes" first) or hands off if the caller wants to submit it another way.</li>
+        </ol>
+      </div>
+      <div class="side">
+        <div class="block">
+          <div class="k">Why it matters</div>
+          <div class="v">Documentation status is a named top call driver — and today it's a repeat call: a provider checks once, then again after resubmitting, competing with the same reviewer team's audit workload.</div>
+        </div>
+        <div class="block wow">
+          <div class="k">Wow moment</div>
+          <div class="v">The assistant doesn't just say "something's missing" — it names exactly what's outstanding, and can trigger the reminder itself after a confirmation.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools">
+      <div class="toolhead">
+        <div class="rule-lbl">Tools &amp; knowledge — what the assistant calls</div>
+        <div class="legend">
+          <span class="k"><span class="sw" style="background:var(--orange)"></span>Action</span>
+          <span class="k"><span class="sw" style="background:var(--azure)"></span>Knowledge</span>
+          <span class="k"><span class="sw" style="background:var(--navy)"></span>System</span>
+        </div>
+      </div>
+      <div class="strip">
+        <div class="tool action">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-action"/></svg></div>
+            <div><div class="nm">get_documentation_status</div><div class="kd">Action · Read</div></div>
+          </div>
+          <div class="nt">Checks which required documents are on file for a bill/claim and which are outstanding.</div>
+          <div class="built">New Data Action · mock document-tracking system</div>
+        </div>
+        <div class="tool action">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-action"/></svg></div>
+            <div><div class="nm">send_document_reminder</div><div class="kd">Action · Write</div></div>
+          </div>
+          <div class="nt">Sends a reminder of outstanding documents to the provider's file, after the caller confirms.</div>
+          <div class="built">New Data Action · mock notification service</div>
+        </div>
+        <div class="tool knowledge">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-knowledge"/></svg></div>
+            <div><div class="nm">billing_terms_knowledge</div><div class="kd">Knowledge</div></div>
+          </div>
+          <div class="nt">Explains what a given document type is and why it's required — same source as use case 1.</div>
+          <div class="built">Knowledge Fabric · shared source</div>
+        </div>
+        <div class="tool">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-system"/></svg></div>
+            <div><div class="nm">Escalation</div><div class="kd">System · Hand-off</div></div>
+          </div>
+          <div class="nt">Hands to a Medical Bill Reviewer if the caller needs to fax/upload directly or disputes what's requested.</div>
+          <div class="built">Routes to Billing queue · outstanding-document list passed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== USE-CASE 3 · DEEP DIVE ==================== -->
+<section class="slide usecase">
+  <div class="ucband">
+    <img class="mast" src="assets/axl-lockup-white.png" alt="AXL — Agentic Experience Labs">
+    <img class="glogo" src="assets/genesys-logo-white.svg" alt="Genesys">
+    <div class="ucband-txt">
+      <div><span class="eyebrow">Use case 3 · deep dive</span></div>
+      <h2>Denial &amp; appeal guidance</h2>
+    </div>
+  </div>
+  <div class="wash"></div>
+
+  <div class="body ucbody">
+    <div class="dd">
+      <div>
+        <div class="rule-lbl">Happy path</div>
+        <ol class="steps">
+          <li>The IVR hands off the authenticated caller with the Bill ID / claim ID already validated.</li>
+          <li>The assistant calls <code>get_denial_reason</code> and explains the denial code in plain language, plus the appeal steps and deadline from Appeals Knowledge.</li>
+          <li>If a dispute is already open, it calls <code>get_appeal_status</code> and reads back where it stands.</li>
+          <li>If the caller wants to file or argue the appeal, it hands off to an Appeals specialist with the denial code and claim already on screen.</li>
+        </ol>
+      </div>
+      <div class="side">
+        <div class="block">
+          <div class="k">Why it matters</div>
+          <div class="v">Denial and appeal calls are the most emotionally charged and highest-risk of the five drivers named in your brief — getting the reason and status right, without a hold, protects both the caller and the appeals SLA.</div>
+        </div>
+        <div class="block wow">
+          <div class="k">Wow moment</div>
+          <div class="v">The caller hears the specific denial reason and appeal deadline in plain language, then reaches a specialist who already has the denial code and claim loaded — no re-explaining.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools">
+      <div class="toolhead">
+        <div class="rule-lbl">Tools &amp; knowledge — what the assistant calls</div>
+        <div class="legend">
+          <span class="k"><span class="sw" style="background:var(--orange)"></span>Action</span>
+          <span class="k"><span class="sw" style="background:var(--azure)"></span>Knowledge</span>
+          <span class="k"><span class="sw" style="background:var(--navy)"></span>System</span>
+        </div>
+      </div>
+      <div class="strip">
+        <div class="tool action">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-action"/></svg></div>
+            <div><div class="nm">get_denial_reason</div><div class="kd">Action · Read</div></div>
+          </div>
+          <div class="nt">Returns the denial code and a plain-language reason for a Bill ID / claim.</div>
+          <div class="built">New Data Action · mock claims/billing platform</div>
+        </div>
+        <div class="tool action">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-action"/></svg></div>
+            <div><div class="nm">get_appeal_status</div><div class="kd">Action · Read</div></div>
+          </div>
+          <div class="nt">Checks whether a dispute is already open for this bill/claim and its current stage.</div>
+          <div class="built">New Data Action · mock appeals tracking</div>
+        </div>
+        <div class="tool knowledge">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-knowledge"/></svg></div>
+            <div><div class="nm">appeals_process_knowledge</div><div class="kd">Knowledge</div></div>
+          </div>
+          <div class="nt">Explains the appeal steps, required documentation and deadlines from Summit's dispute process.</div>
+          <div class="built">Knowledge Fabric · new source</div>
+        </div>
+        <div class="tool">
+          <div class="head">
+            <div class="ic"><svg viewBox="0 0 215 215"><use href="#ic-system"/></svg></div>
+            <div><div class="nm">Escalation</div><div class="kd">System · Hand-off</div></div>
+          </div>
+          <div class="nt">Hands to an Appeals specialist to file or argue the appeal, with the denial code and any open dispute already loaded.</div>
+          <div class="built">Routes to Appeals queue · full context passed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== 7 · APPENDIX DIVIDER ==================== -->
+<section class="slide divider-slide">
+  <img class="mast" src="assets/axl-lockup-white.png" alt="AXL — Agentic Experience Labs">
+  <img class="glogo" src="assets/genesys-logo-white.svg" alt="Genesys">
+
+  <div class="body">
+    <div><span class="eyebrow">Appendix</span></div>
+    <h2>Reference &amp; provenance</h2>
+    <div class="lead">Supporting material for the use cases above — where each claim traces to, and the questions we'd settle with you before building.</div>
+  </div>
+</section>
+
+
+<!-- ==================== 8 · SOURCES ==================== -->
+<section class="slide">
+  <div class="ucband">
+    <img class="mast" src="assets/axl-lockup-white.png" alt="AXL — Agentic Experience Labs">
+    <img class="glogo" src="assets/genesys-logo-white.svg" alt="Genesys">
+    <div class="ucband-txt">
+      <div><span class="eyebrow plain">Appendix · Provenance</span></div>
+      <h2>Where this came from</h2>
+    </div>
+  </div>
+  <div class="wash"></div>
+
+  <div class="body ucbody">
+    <div class="lead">Everything tagged <strong>Brand-grounded</strong> traces to a public page below. <strong>Proposed</strong> items are our inference from the vertical, flagged so you can push back on them.</div>
+
+    <!-- One .src per source. class="p" = Grounded (a real public page — put the page
+         in the inner <span>), class="p inf" = Proposed (your inference — say where it
+         comes from). Every Brand-grounded claim in the deck should trace to one here. -->
+    <div class="srcgrid">
+      <div class="src">
+        <span class="p">Grounded</span>
+        <span class="t">Summit Billing IVR / AI Automation Opportunity brief<span>Provided directly by the Summit stakeholder team, Sep 2026</span></span>
+      </div>
+      <div class="src">
+        <span class="p">Grounded</span>
+        <span class="t">Summit division overview — "Know the people who know workers' comp&reg;"<span>greatamericaninsurancegroup.com/about-us/business-operations/division/summit</span></span>
+      </div>
+      <div class="src">
+        <span class="p">Grounded</span>
+        <span class="t">Great American Insurance Group homepage &amp; company overview<span>greatamericaninsurancegroup.com</span></span>
+      </div>
+      <div class="src">
+        <span class="p">Grounded</span>
+        <span class="t">Summit Medical Bill Reviewer role — billing review, disputes, HIPAA/state-law compliance<span>greatinsurancejobs.com &amp; emploive.com job postings</span></span>
+      </div>
+      <div class="src">
+        <span class="p inf">Proposed</span>
+        <span class="t">Exact backend systems and field names behind the Tax ID + Bill ID lookup<span>Inferred from the brief's caller journey — mocked for the lab, to confirm against the real platform</span></span>
+      </div>
+      <div class="src">
+        <span class="p inf">Proposed</span>
+        <span class="t">Tool names, mock logic and the three-use-case split (payment status / documentation / denial &amp; appeal)<span>Our structuring of the brief's five call drivers into single-intent prototypes — not yet confirmed with Summit</span></span>
+      </div>
+    </div>
+
+    <div class="confirm">
+      <div class="rule-lbl">What we'd confirm with you before we build</div>
+      <div class="cgrid">
+        <div class="ccell"><b>Volume mix</b>Which of the five drivers — payment status, receipt confirmation, documentation, denial, appeal — is highest-volume today, to sequence the phased rollout?</div>
+        <div class="ccell"><b>System of record</b>What system(s) hold bill/claim status and documentation today, so the mocked Data Actions mirror the real fields?</div>
+        <div class="ccell"><b>Escalation destination</b>When automation can't resolve it, does it route to the same Medical Bill Reviewer team, or a distinct billing/appeals queue?</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Flags any use-case deep dive that is missing its tools strip / escalation box.
+  // Screen only — it exists to catch a half-finished deck during the review before
+  // the deck goes to a customer. The @media print rule hides the banner.
+  document.querySelectorAll("section.slide.usecase").forEach((s) => {
+    const strip = s.querySelector(".tools .strip");
+    if (strip && strip.querySelector(".tool")) return;
+    s.classList.add("no-tools");
+    const w = document.createElement("div");
+    w.className = "ucwarn";
+    w.textContent =
+      "This deep dive has no tools strip. Every use case needs its actions, its " +
+      "knowledge, and the Escalation box before this deck goes to a customer.";
+    s.appendChild(w);
+    console.warn("POV deck: use-case slide is missing its tools strip.", s);
+  });
+</script>
+</body>
+</html>
